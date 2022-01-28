@@ -38,7 +38,7 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "./build",
+  "homepage": "https://imad273.github.io/web3-Ticket/build/",
   "devDependencies": {
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
