@@ -54,6 +54,7 @@ function App() {
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
 
     const abi = await getAbi();
+    
     const address = contract_address;
 
     const contract = new web3.eth.Contract(abi, address);
