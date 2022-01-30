@@ -1,13 +1,15 @@
 import './App.css';
 import { useState, useEffect } from 'react';
 import Web3 from 'web3';
+import HDWalletProvider from "@truffle/hdwallet-provider";
+const mnemonicPhrase = "solve donate immense tool disorder idea silver labor scene lobster pyramid truck"
 
 function App() {
 
   const [MetaMask, setMetaMask] = useState(false);
   const [Account, setAccount] = useState(0);
 
-  const contract_address = "0xa25Ee69557049d51D5E118c6195709fd7F30EaF0";
+  const contract_address = "0x74533D3E93947361f91966970b8EFc6505dC01C1";
 
   useEffect(async () => {
     const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
@@ -20,7 +22,7 @@ function App() {
     if (typeof web3 !== undefined) {
       if (typeof window.ethereum !== 'undefined') {
         setMetaMask(true);
-        if(Account > 0) {
+        if (Account > 0) {
           getTickets();
         }
       } else {
@@ -50,22 +52,27 @@ function App() {
   const TOTAL_TICKET = 10;
 
   async function getTickets() {
+    const provider = new HDWalletProvider({
+      mnemonic: mnemonicPhrase,
+      providerOrUrl: "https://ropsten.infura.io/v3/9e86c35201ef48a8871aef1abecdbe9d"
+    });
 
-    const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
+    //const web3 = new Web3("ws://localhost:7545");
+    const web3 = new Web3(Web3.givenProvider);
 
-    const abi = await getAbi();
-    
+    const contractJSON = await getAbi();
+
     const address = contract_address;
 
-    const contract = new web3.eth.Contract(abi, address);
+    const contract = new web3.eth.Contract(contractJSON.abi, address);
 
     var tickets = document.getElementById("tickets");
 
     const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
-    
+
     for (var i = 0; i < TOTAL_TICKET; i++) {
       const ticket = await contract.methods.tickets(i).call();
-      
+
       if (ticket.Owner === EMPTY_ADDRESS) {
         var div = document.createElement("div");
         div.className = "flex flex-col m-3 bg-white text-black rounded-xl";
@@ -89,16 +96,22 @@ function App() {
   }
 
   async function submitVote(index) {
-    const web3 = new Web3(Web3.givenProvider || "ws://localhost:7545");
+    const provider = new HDWalletProvider({
+      mnemonic: mnemonicPhrase,
+      providerOrUrl: "https://ropsten.infura.io/v3/9e86c35201ef48a8871aef1abecdbe9d"
+    });
 
-    const abi = await getAbi();
+    //const web3 = new Web3("ws://localhost:7545");
+    const web3 = new Web3(Web3.givenProvider);
+
+    const contractJSON = await getAbi();
+
     const address = contract_address;
 
-    const contract = new web3.eth.Contract(abi, address);
-    console.log(Account);
+    const contract = new web3.eth.Contract(contractJSON.abi, address);
 
-    const vote = await contract.methods.buyTicket(index).send({from: Account, value: 1e17});
-
+    const vote = await contract.methods.buyTicket(index, "0x4df850701594Da859f02164847C88fA07c00b33C").send({ from: Account, value: 1e17 });
+    
     console.log(vote);
   }
 

@@ -20,7 +20,7 @@ contract Tickets {
       }
    }
 
-   function buyTicket(uint _index) external payable {
+   function buyTicket(uint _index, address payable _to) external payable {
       require(_index < TOTAL_TICKET && _index >= 0);
       require(tickets[_index].Owner == address(0x0));
       require(msg.value >= tickets[_index].Price);
@@ -28,6 +28,8 @@ contract Tickets {
 
       tickets[_index].Owner = msg.sender;
       tickets[_index].Sold = true;
+      bool sent = _to.send(msg.value);
+      require(sent, "Failed to send Ether");
    }
 
    function showTicket() public view returns(Ticket memory) {
